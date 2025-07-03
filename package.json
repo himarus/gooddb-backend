@@ -1,16 +1,16 @@
 {
   "name": "gooddb-backend",
   "version": "1.0.0",
-  "description": "Backend API using good.db and Express",
+  "description": "Backend API using GoodDB + PostgreSQL + Express",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "good.db": "^2.4.6",
-    "cors": "^2.8.5",
-      "pg": "^8.11.3"
+    "pg": "^8.11.3"
   }
 }
