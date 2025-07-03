@@ -1,40 +1,41 @@
+// server.js
 import express from 'express';
 import cors from 'cors';
 import { GoodDB, PostgreSQLDriver } from 'good.db';
 
+// Create express app
 const app = express();
 
-// ✅ Custom logger with timestamp
+// ✅ Timestamped logger
 const log = (...args) => {
   console.log(`[${new Date().toISOString()}]`, ...args);
 };
 
-// ✅ Initialize GoodDB with PostgreSQL
-// Using the direct connection string (can also use process.env.DATABASE_URL)
+// ✅ Connect to PostgreSQL via DATABASE_URL env
 const db = new GoodDB(new PostgreSQLDriver({
-  connectionString: 'postgresql://feedback_db_oh5j_user:Ukwt0MDRmReH05BIrMsUJMLeYXw92zI3@dpg-d1j4akqli9vc739civ10-a.oregon-postgres.render.com/feedback_db_oh5j'
+  connectionString: process.env.DATABASE_URL
 }));
 
-// ✅ PostgreSQLDriver requires connect()
-await db.connect();
+await db.connect(); // Required for PostgreSQL
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// ✅ Health check route
+// ✅ Health check
 app.get('/', (req, res) => {
   log('Health check hit');
   res.send('✅ GoodDB + PostgreSQL backend is running.');
 });
 
-// ✅ Get all feedbacks (stored under 'users')
+// ✅ Get all feedbacks
 app.get('/users', async (req, res) => {
   const users = await db.get('users') || [];
   log('GET /users →', users);
   res.json(users);
 });
 
-// ✅ Add feedback
+// ✅ Add new feedback
 app.post('/users', async (req, res) => {
   const user = req.body;
   await db.push('users', user);
@@ -50,14 +51,14 @@ app.delete('/users/:name', async (req, res) => {
   res.json({ success: true });
 });
 
-// ✅ Clear all feedbacks (optional)
+// ✅ Clear all feedbacks (use with care!)
 app.delete('/users', async (req, res) => {
   await db.set('users', []);
   log('DELETE ALL /users');
   res.json({ success: true });
 });
 
-// ✅ Start server
+// ✅ Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   log(`🚀 Server running on port ${PORT}`);
