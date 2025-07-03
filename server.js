@@ -12,8 +12,10 @@ const log = (...args) => {
 };
 
 // ✅ Connect to PostgreSQL via DATABASE_URL env
+// ✅ Connect to PostgreSQL via DATABASE_URL env with SSL enabled
 const db = new GoodDB(new PostgreSQLDriver({
-  connectionString: process.env.DATABASE_URL
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
 }));
 
 await db.connect(); // Required for PostgreSQL
